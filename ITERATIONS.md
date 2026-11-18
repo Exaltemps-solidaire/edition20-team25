@@ -5,7 +5,8 @@
 - **Source du plan** : proposé par l'agent (aucun plan d'itérations PM Lab trouvé dans
   `passation/cadrage/` ni dans `passation.json`).
 - **Temps restant annoncé** : 60 minutes (question posée le 2026-11-18, au début de
-  `/planifier-iterations`) ; reconfirmé à 60 minutes au début de l'itération 1.
+  `/planifier-iterations`) ; reconfirmé à 60 minutes au début de l'itération 1 ; ~50 minutes
+  au début de l'itération 2.
 - **Durée du tour de test de l'équipe** : 10 minutes par itération.
 - **Capacité** : chaque itération coûte au moins codage (≤ 10 min) + publication (~5 min) +
   tour de test (10 min), soit 15 à 25 minutes. Avec 60 minutes, 2 itérations détaillées tiennent
@@ -76,6 +77,10 @@
     - `DEPLOIEMENT.md` — fiche de reprise du dépôt ; sert la règle 8 du contrat.
     - `podman-compose.yml` (racine) — recette de déploiement sur cette VM.
     - `e2e/demo.spec.ts` — étape de démonstration de l'écran d'accueil (hors DoD).
+  - **Provisoire** : les 3 boutons de l'écran d'accueil ne naviguent nulle part (pas de
+    `onClick`) — tout le contenu après l'accueil est en dur dans le prototype, pas encore dans
+    l'application ; `.env.example` ne liste que `PORT`, à étoffer dès qu'une base, un stockage ou
+    une passerelle IA entrent en jeu.
 
 ## Itération 2 : le parcours « première demande » devient réel, jusqu'à l'action concrète
 
@@ -108,7 +113,73 @@
   choix) — pas sur le balisage pur.
 - **Étapes ajoutées à la démo** : choisir « je n'ai pas encore fait de demande », dérouler
   jusqu'à l'action concrète proposée.
-- **Bilan** : _à remplir en fin d'itération._
+- **Bilan** :
+  - Durée de codage réelle : 4 minutes pour l'écriture du parcours (dans le budget, pas
+    d'alarme déclenchée) ; une correction supplémentaire a suivi pendant la phase de
+    vérification (voir ci-dessous), hors du chrono de codage mais avant le signal.
+  - Décision de design tranchée au codage : contenu des écrans en dur côté `frontend/`
+    (pas de route `api/` nouvelle) — le contenu est statique, identique pour toutes les
+    visiteuses, une route API n'aurait rien apporté dans le budget de l'itération.
+  - Critères d'acceptation :
+    - 1 et 2 satisfaits : les choix « je n'ai pas encore fait de demande » et « je veux
+      juste savoir » mènent à l'explication de l'ALD 31 puis aux étapes de la procédure
+      (timeline reproduite de `screen-3a`), jusqu'à l'action concrète unique (« parler à
+      son médecin traitant », `screen-4a`).
+    - 3 satisfait : le choix « j'ai reçu un refus », ainsi que « Trouver du soutien autour
+      de moi » sur l'écran final (même famille de cas, pas d'erreur silencieuse), affichent
+      un message explicite « pas encore disponible ».
+  - Tests unitaires : 3 ajoutés dans `frontend/src/app/chatbot-flow.test.ts`, sur la fonction
+    pure `getNextScreen` (logique de transition entre écrans, pas sur le balisage). `npm test`
+    passe (2 tests `api/` + 3 tests `frontend/`).
+  - Contrat de déployabilité : `./scripts/verifier-deployabilite.sh` → aucune borne, aucune
+    alarme (vérifié avant et après la correction de CSP ci-dessous).
+  - **Incident trouvé en vérification, corrigé avant signal** : la `Content-Security-Policy`
+    posée en itération 1 ne déclarait pas de `script-src`, donc `default-src 'self'`
+    s'appliquait aussi aux scripts — elle bloquait les scripts inline que Next.js injecte
+    lui-même pour l'hydratation (bootstrap React, payload du routeur). Résultat : la page
+    s'affichait, mais aucun bouton ne réagissait (erreur silencieuse, visible seulement dans
+    la console du navigateur — `Minified React error #412`). Corrigé en ajoutant
+    `script-src 'self' 'unsafe-inline'` aux 4 en-têtes CSP de `frontend/nginx.conf` ; ce point
+    avait pourtant été signalé explicitement par le `/CLAUDE.md` du serveur (« elle ne
+    déclare pas de `script-src` [...] et la page rend blanc sans erreur serveur ») — relu
+    trop vite en itération 1, où l'absence de bouton interactif masquait le symptôme.
+  - Déploiement : image `frontend` reconstruite et publiée deux fois (une fois avec le
+    nouveau code, une seconde après la correction de CSP) ; `api` inchangée, non
+    reconstruite. Conteneurs recréés via `podman compose ... up -d --force-recreate`.
+    `/health` et `/sante` répondent `200` sur 8080 et 8081 (vérifié avec `curl` depuis la
+    machine, après la correction).
+  - Rien bloqué par le harnais : pas de secret, tests verts.
+  - Démo (hors DoD) : `e2e/demo.spec.ts` complété d'une étape (parcours « première demande »
+    jusqu'à l'action concrète), rejouée avec succès contre `localhost:8080` après la
+    correction de CSP (elle avait échoué en timeout avant, pour la même raison que
+    l'incident ci-dessus — bon indicateur que la démo attrape ce genre de panne).
+  - Signalé à PM Lab : version 2, réponse `moteur_avance: false` (version enregistrée, la
+    squad peut la tester).
+  - Vérification du développeur demandée, sans bloquer le signal : confirmer dans un
+    navigateur que `$URL_PUBLIQUE/health` et `$URL_PUBLIQUE/sante` répondent 200.
+  - Reporté : rien de prévu n'a été coupé.
+  - **Modifications** :
+    - `frontend/src/app/chatbot-flow.ts` — logique pure de transition entre écrans
+      (`getNextScreen`) ; sert les 3 critères d'acceptation (quel écran suivant pour quel
+      choix, y compris le refus → indisponible).
+    - `frontend/src/app/chatbot-flow.test.ts` — 3 tests unitaires sur cette logique ; sert
+      le point 2 de la DoD.
+    - `frontend/src/app/page.tsx` — composant client (`"use client"`, `useState`) : rendu
+      des 6 écrans (accueil, intro × 2, étapes, action, indisponible) et branchement des
+      boutons sur `getNextScreen` ; sert les 3 critères d'acceptation.
+    - `frontend/src/app/page.module.css` — styles ajoutés pour les nouveaux éléments
+      (bulle utilisateur, boutons primaire/secondaire, timeline des étapes, carte ressource) ;
+      palette et gabarit repris du prototype.
+    - `frontend/nginx.conf` — ajout de `script-src 'self' 'unsafe-inline'` à la CSP ; sert
+      la correction de l'incident ci-dessus, sans quoi aucun écran du critère 1 n'est
+      atteignable.
+    - `e2e/demo.spec.ts` — étape de démonstration du parcours « première demande » (hors
+      DoD).
+  - **Provisoire** : le bouton « Accéder au guide ENDOmind → » (carte ressource de l'écran
+    final) n'a pas de cible réelle — aucun document n'est fourni dans la passation ; le
+    bouton « Trouver du soutien autour de moi → » mène au même message « pas encore
+    disponible » que « j'ai reçu un refus », en anticipation de l'écran dédié listé dans
+    « À venir ».
 
 ---
 

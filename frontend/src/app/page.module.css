@@ -164,3 +164,141 @@
   padding: 6px 18px 18px;
   line-height: 1.5;
 }
+
+.bubbleUser {
+  background: var(--endo-framboise);
+  color: #fff;
+  border-radius: 12px 4px 12px 12px;
+  padding: 12px 14px;
+  max-width: 88%;
+  align-self: flex-end;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.bottomActions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 4px 14px 10px;
+}
+
+.btnPrimary {
+  background: var(--endo-framboise);
+  border: 1.5px solid var(--endo-framboise);
+  border-radius: 12px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.btnSecondary {
+  background: transparent;
+  border: 1.5px solid var(--endo-framboise);
+  border-radius: 12px;
+  color: var(--endo-framboise);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.procedureWrap {
+  padding: 4px 14px 10px;
+}
+
+.procedureTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--endo-framboise);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 10px;
+}
+
+.stepLine {
+  display: flex;
+  gap: 10px;
+}
+
+.stepCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.stepBadge {
+  background: var(--endo-creme);
+  color: var(--endo-encre);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.stepBadgeHere {
+  background: var(--endo-framboise);
+  color: #fff;
+}
+
+.stepConnector {
+  flex: 1;
+  width: 2px;
+  min-height: 24px;
+  background: var(--endo-creme);
+  margin: 4px 0;
+}
+
+.stepContent {
+  padding-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stepSub {
+  font-size: 12px;
+  color: #777;
+}
+
+.refusTag {
+  font-size: 12px;
+  color: var(--endo-framboise);
+  font-weight: 600;
+}
+
+.ressourceCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--endo-peche);
+  border-radius: 12px;
+  margin: 4px 14px 10px;
+  padding: 14px 16px;
+}
+
+.rcLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--endo-framboise);
+}
+
+.rcTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rcDesc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}

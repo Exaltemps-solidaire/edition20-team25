@@ -19,4 +19,20 @@ test("Démo : le cas passant", async ({ page }) => {
       page.getByRole("button", { name: /je veux juste savoir/i }),
     ).toBeVisible();
   });
+
+  await test.step("Je choisis « je n'ai pas encore fait de demande » et je déroule jusqu'à l'action concrète", async () => {
+    await page
+      .getByRole("button", { name: /je n.ai pas encore fait de demande/i })
+      .click();
+    await page.getByRole("button", { name: /voir la première étape/i }).click();
+    await expect(
+      page.getByText(/les différentes étapes de la procédure/i),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: /comprendre la prochaine étape concrète/i })
+      .click();
+    await expect(
+      page.getByText(/parler à votre médecin traitant/i),
+    ).toBeVisible();
+  });
 });
