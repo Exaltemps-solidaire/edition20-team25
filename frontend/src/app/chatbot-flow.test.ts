@@ -8,8 +8,16 @@ describe("getNextScreen", () => {
     );
   });
 
-  it("dirige vers l'écran « bientôt disponible » quand la patiente choisit « refus »", () => {
-    expect(getNextScreen("accueil", "refus")).toBe("indisponible");
+  it("dirige vers l'écran d'orientation du refus quand la patiente choisit « refus »", () => {
+    expect(getNextScreen("accueil", "refus")).toBe("refus-intro");
+  });
+
+  it("dirige vers les étapes de la procédure depuis l'écran d'orientation du refus", () => {
+    expect(getNextScreen("refus-intro", "continuer")).toBe("etapes");
+  });
+
+  it("dirige vers l'écran « bientôt disponible » quand la patiente cherche du soutien", () => {
+    expect(getNextScreen("action", "soutien")).toBe("indisponible");
   });
 
   it("enchaîne les étapes de la procédure vers l'action concrète", () => {

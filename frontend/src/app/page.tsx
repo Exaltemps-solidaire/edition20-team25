@@ -214,6 +214,69 @@ export default function Home() {
           </>
         )}
 
+        {screen === "refus-intro" && (
+          <>
+            <div className={styles.chatBody}>
+              <div className={styles.bubbleUser}>
+                J&rsquo;ai reçu un refus et je veux le contester
+              </div>
+              <div className={styles.bubbleBot}>
+                Je comprends, et je veux d&rsquo;abord vous dire :{" "}
+                <strong>
+                  un refus initial, c&rsquo;est fréquent pour
+                  l&rsquo;endométriose.
+                </strong>{" "}
+                Ce n&rsquo;est pas une porte définitivement fermée.
+                <br />
+                <br />
+                Plusieurs voies de recours existent. La procédure demande du
+                temps et de l&rsquo;énergie — je vais vous l&rsquo;expliquer
+                honnêtement, étape par étape, pour que vous puissiez décider
+                en connaissance de cause.
+              </div>
+              <div className={styles.bubbleBot}>
+                Pour vous orienter au mieux :{" "}
+                <strong>à quelle étape le refus a-t-il eu lieu ?</strong>
+              </div>
+            </div>
+
+            <div className={styles.quickChoices}>
+              <button
+                type="button"
+                className={styles.choiceBtn}
+                onClick={() => go("continuer")}
+              >
+                Le médecin-conseil de la CPAM a refusé ma demande initiale
+              </button>
+              <button
+                type="button"
+                className={styles.choiceBtn}
+                onClick={() => go("continuer")}
+              >
+                La Commission médicale de recours amiable (CMRA) a aussi
+                refusé
+              </button>
+              <button
+                type="button"
+                className={styles.choiceBtn}
+                onClick={() => go("continuer")}
+              >
+                Je ne sais pas exactement à quelle étape j&rsquo;en suis
+              </button>
+            </div>
+
+            <div className={styles.bottomActions}>
+              <button
+                type="button"
+                className={styles.btnSecondary}
+                onClick={() => go("retour")}
+              >
+                ← Revenir au début
+              </button>
+            </div>
+          </>
+        )}
+
         {screen === "etapes" && (
           <>
             <div className={styles.chatBody}>

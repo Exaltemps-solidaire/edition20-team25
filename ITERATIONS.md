@@ -183,9 +183,90 @@
 
 ---
 
+## Itération 3 : le refus initial reçoit un premier message d'orientation réel
+
+- **✂️ Rognée au moment du codage** : temps restant annoncé ~20 minutes au début de cette
+  itération (demandé le 2026-11-18, au début de `/iteration 3`), avec un ~10 minutes déjà
+  entamés par la question de cadrage elle-même. La capacité normale d'une itération (codage
+  + publication + tour de test, 15 à 25 min) ne tient plus pour la branche de refus complète
+  prévue en « À venir » (CMRA puis tribunal, 4 écrans `screen-2b`/`3b`/`3c`/`4b`). Proposé
+  au développeur de stabiliser sans coder, ou de réduire fortement le périmètre ; il choisit
+  de tenter une version réduite. **Validé par le développeur en direct dans l'échange, pas
+  par un tour de cadreurs** (le temps ne le permettait pas) — à confronter aux cadreurs au
+  prochain tour de test, comme toute itération.
+- **Dans le périmètre** : le choix « j'ai reçu un refus » sur l'écran d'accueil affiche le
+  message de réassurance et la question d'orientation de `screen-2b` (« à quelle étape le
+  refus a-t-il eu lieu ? », 3 choix), puis **dirige les 3 choix vers l'écran des étapes de
+  la procédure déjà existant** (`etapes`, celui d'itération 2) plutôt que vers les 3 écrans
+  dédiés (`screen-3b`/`3c`/`3d`) — cet écran rappelle déjà « chaque refus ouvre une nouvelle
+  voie de recours » et détaille les voies de recours, donc orienter dessus n'est pas un
+  mensonge, juste moins personnalisé.
+- **Hors périmètre** : les 3 écrans dédiés par sous-cas (`screen-3b`/`3c`/`3d`), l'écran de
+  positionnement, l'écran de soutien dédié — inchangé, reportés en « À venir ».
+- **Critères d'acceptation** :
+  - Étant donné l'écran d'accueil, quand la patiente choisit « j'ai reçu un refus », alors
+    elle voit un message de réassurance et 3 choix d'orientation (au lieu du message
+    générique « pas encore disponible »).
+  - Étant donné cet écran, quel que soit le choix qu'elle fait parmi les 3, alors elle est
+    dirigée vers les étapes de la procédure.
+- **Hypothèse de l'équipe couverte** : la même qu'en itération 2, appliquée au cas du refus
+  — la patiente ne reste pas bloquée faute d'information, même sans écran dédié à son
+  sous-cas précis.
+- **Codage estimé** : 6 minutes (réduit : un écran, pas de nouvelle timeline).
+- **Fichiers prévus** : `frontend/src/app/chatbot-flow.ts` (nouvel écran et transition),
+  `frontend/src/app/page.tsx` (rendu de l'écran), `frontend/src/app/chatbot-flow.test.ts`
+  (test de la nouvelle transition).
+- **Tests unitaires prévus** : 1, sur la transition accueil → refus-intro.
+- **Étapes ajoutées à la démo** : aucune si le temps ne le permet pas — hors DoD, sans
+  impact sur la clôture.
+- **Bilan** :
+  - Durée de codage réelle : moins d'une minute mesurée par le chrono (le travail réel —
+    extraction du contenu du prototype, décision de réutiliser l'écran `etapes` existant au
+    lieu des 3 écrans dédiés, rédaction du plan réduit ci-dessus — a pris plus de temps que
+    ça, mais était du cadrage, pas du codage au sens du chrono). Pas d'alarme déclenchée,
+    pas de dépassement.
+  - Critères d'acceptation : les deux satisfaits — le choix « j'ai reçu un refus » affiche
+    le message de réassurance et les 3 choix d'orientation de `screen-2b` ; les 3 mènent à
+    l'écran des étapes de la procédure (vérifié manuellement avec Playwright contre le
+    déploiement local, pas seulement en local de développement).
+  - Tests unitaires : 2 ajoutés, 1 modifié, dans `frontend/src/app/chatbot-flow.test.ts`
+    (accueil → refus-intro ; refus-intro → etapes ; action → indisponible pour le bouton
+    soutien, dont la transition avait perdu sa couverture explicite après le changement de
+    cible du choix « refus »). `npm test` passe (2 tests `api/` + 5 tests `frontend/`).
+  - Contrat de déployabilité : `./scripts/verifier-deployabilite.sh` → aucune borne, aucune
+    alarme.
+  - Déploiement : image `frontend` reconstruite et publiée (cache réutilisé pour les
+    couches inchangées) ; `api` non touchée. Conteneurs recréés via
+    `podman compose ... up -d --force-recreate`. `/health` et `/sante` répondent `200` sur
+    8080 et 8081.
+  - Rien bloqué par le harnais : pas de secret, tests verts.
+  - Démo (hors DoD) : non mise à jour, faute de temps — reporté, sans bloquer le signal.
+  - Signalé à PM Lab : version 3, réponse `moteur_avance: false`.
+  - Vérification du développeur demandée, sans bloquer le signal : confirmer dans un
+    navigateur que `$URL_PUBLIQUE/health` et `$URL_PUBLIQUE/sante` répondent 200, et que le
+    nouveau parcours « j'ai reçu un refus » s'affiche correctement.
+  - Reporté : les 3 écrans dédiés par sous-cas de refus (`screen-3b`/`3c`/`3d`, voir « À
+    venir ») ; la mise à jour de `e2e/demo.spec.ts` pour ce nouveau chemin.
+  - **Modifications** :
+    - `frontend/src/app/chatbot-flow.ts` — nouvel écran `refus-intro` et sa transition
+      (accueil → refus-intro → etapes) ; sert les 2 critères d'acceptation.
+    - `frontend/src/app/chatbot-flow.test.ts` — 2 tests ajoutés (refus-intro et sa suite),
+      1 test existant adapté (le choix « soutien », qui restait le seul à mener vers
+      `indisponible`) ; sert le point 2 de la DoD.
+    - `frontend/src/app/page.tsx` — rendu de l'écran `refus-intro` (message de réassurance,
+      3 choix, retour) ; sert les 2 critères d'acceptation.
+  - **Provisoire** : les 3 choix de l'écran `refus-intro` mènent tous au même écran
+    `etapes`, sans distinguer le sous-cas (CPAM, CMRA, « je ne sais pas ») — c'est la
+    réduction de périmètre assumée de cette itération, à reprendre avec les 3 écrans dédiés
+    du prototype si une prochaine itération le permet.
+
+---
+
 ## À venir (non détaillé, ordre de priorité du plan de l'équipe)
 
-1. Branches de refus : orientation CMRA puis tribunal judiciaire (`screen-2b`, `3b`, `3c`, `4b`).
+1. Branches de refus détaillées par sous-cas : CMRA (`screen-3b`/`3c`) puis tribunal
+   judiciaire (`4b`) — l'itération 3 ci-dessus oriente déjà vers la procédure générale, sans
+   distinguer les sous-cas.
 2. Situer son étape : écran de positionnement pour une patiente déjà engagée (`screen-3d`).
 3. Trouver du soutien : écran ressources (groupes de parole, cafés patientes, ETP, guides)
    accessible à tout moment (`screen-5`).
