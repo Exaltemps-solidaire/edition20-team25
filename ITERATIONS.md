@@ -6,7 +6,8 @@
   `passation/cadrage/` ni dans `passation.json`).
 - **Temps restant annoncé** : 60 minutes (question posée le 2026-11-18, au début de
   `/planifier-iterations`) ; reconfirmé à 60 minutes au début de l'itération 1 ; ~50 minutes
-  au début de l'itération 2.
+  au début de l'itération 2 ; ~20 minutes au début de l'itération 3 ; moins de 15 minutes
+  au début de l'itération 4.
 - **Durée du tour de test de l'équipe** : 10 minutes par itération.
 - **Capacité** : chaque itération coûte au moins codage (≤ 10 min) + publication (~5 min) +
   tour de test (10 min), soit 15 à 25 minutes. Avec 60 minutes, 2 itérations détaillées tiennent
@@ -262,11 +263,27 @@
 
 ---
 
-## À venir (non détaillé, ordre de priorité du plan de l'équipe)
+## Itération 4 : non tentée — stabilisation pour le pitch à la place
 
-1. Branches de refus détaillées par sous-cas : CMRA (`screen-3b`/`3c`) puis tribunal
-   judiciaire (`4b`) — l'itération 3 ci-dessus oriente déjà vers la procédure générale, sans
-   distinguer les sous-cas.
-2. Situer son étape : écran de positionnement pour une patiente déjà engagée (`screen-3d`).
-3. Trouver du soutien : écran ressources (groupes de parole, cafés patientes, ETP, guides)
-   accessible à tout moment (`screen-5`).
+- ❗️ Temps restant annoncé : moins de 15 minutes au début de `/iteration 4`. La capacité
+  minimale d'une itération (codage ≤ 10 min + publication ~5 min + tour de test 10 min,
+  soit 15 à 25 min) ne tient plus, même réduite comme l'itération 3. Aucun code écrit.
+- Conformément à la section 3 de `CLAUDE.md` (« quand le temps restant ne permet plus
+  qu'une itération, consacre-la à stabiliser ce qui sera montré au pitch »), le temps a été
+  utilisé à vérifier l'existant plutôt qu'à coder :
+  - dépôt propre (`git status` vide, rien en attente de commit) ;
+  - `/health` et `/sante` répondent `200` sur 8080 (front) et 8081 (api) ;
+  - `npm test` passe (2 tests `api/` + 5 tests `frontend/`) ;
+  - `e2e/demo.spec.ts` rejouée avec succès contre le déploiement local.
+- Aucun signal PM Lab envoyé pour cette « itération » : rien n'a changé depuis la version 3
+  déjà signalée, un nouveau signal n'aurait rien apporté à l'équipe.
+- **Reporté, pour une session future** (ordre de priorité inchangé) :
+  1. Branches de refus détaillées par sous-cas : CMRA (`screen-3b`/`3c`) puis tribunal
+     judiciaire (`4b`) — l'itération 3 oriente déjà vers la procédure générale, sans
+     distinguer les sous-cas.
+  2. Situer son étape : écran de positionnement pour une patiente déjà engagée
+     (`screen-3d`).
+  3. Trouver du soutien : écran ressources (groupes de parole, cafés patientes, ETP,
+     guides) accessible à tout moment (`screen-5`).
+  4. Cible réelle pour le bouton « Accéder au guide ENDOmind » de l'écran d'action
+     (provisoire depuis l'itération 2).
